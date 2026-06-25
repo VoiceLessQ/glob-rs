@@ -612,7 +612,11 @@ mod tests {
         assert_eq!(split("a/b/"), ("a/b".to_string(), String::new()));
         assert_eq!(split("c"), (String::new(), "c".to_string()));
         assert_eq!(split("/"), ("/".to_string(), String::new()));
+        // Drive letters exist only on Windows; on POSIX "C:" is an ordinary name component.
+        #[cfg(windows)]
         assert_eq!(split("C:/x"), ("C:/".to_string(), "x".to_string()));
+        #[cfg(not(windows))]
+        assert_eq!(split("C:/x"), ("C:".to_string(), "x".to_string()));
     }
 
     #[test]
