@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Linux exercises the case-sensitive, slash-only path; Windows exercises the
+        # case-insensitive path and backslash separators. Both must match CPython.
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up CPython 3.13.13 (the exact parity oracle this crate is ported from)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13.13"
+
+      - name: Show Python version (for the record)
+        run: python --version
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build (lib + diff harness binary)
+        run: cargo build --verbose
+
+      - name: Unit + doc tests
+        run: cargo test --verbose
+
+      - name: Clippy (deny warnings)
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Differential test vs CPython glob
+        run: python difftest.py
