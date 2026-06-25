@@ -1,0 +1,17 @@
+[package]
+name = "glob-rs"
+version = "0.1.0"
+edition = "2024"
+description = "A Rust port of Python's glob: shell-style pathname expansion (*, ?, [seq], [!seq], ** recursive) over the filesystem, matching CPython semantics."
+license = "MIT"
+repository = "https://github.com/VoiceLessQ/glob-rs"
+readme = "README.md"
+keywords = ["glob", "fnmatch", "wildcard", "filesystem", "pattern"]
+categories = ["filesystem"]
+# Keep the published crate library-only; the differential harness lives in the repo only.
+exclude = ["/difftest.py", "/src/bin", "/.github"]
+
+[dependencies]
+regex = "1.12.4"
+# The shell-glob to regex matcher glob is built on; same Python-parity port.
+fnmatch-rs = "0.1"
