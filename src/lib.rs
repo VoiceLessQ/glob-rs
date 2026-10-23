@@ -470,7 +470,10 @@ fn fs_path(p: &str) -> &str {
 /// basenames. A non-existent or unreadable directory yields an empty list (like CPython).
 fn listdir(scan: &str, dironly: bool) -> Vec<String> {
     let dir = fs_path(scan);
-    let read = std::fs::read_dir(dir).expect("read_dir failed");
+    let read = match std::fs::read_dir(dir) {
+        Ok(r) => r,
+        Err(_) => return Vec::new(),
+    };
     let mut out = Vec::new();
     for entry in read.flatten() {
         let name = entry.file_name().to_string_lossy().into_owned();
